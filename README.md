@@ -49,6 +49,20 @@ packages/*      adapters, ui, blocks, sdk
 docker/         self-host image + compose
 ```
 
+## Development
+
+Requires Node 22+ and pnpm 9.
+
+```sh
+pnpm install
+pnpm dev        # SvelteKit dev server (apps/web)
+pnpm lint       # prettier + eslint
+pnpm check      # typecheck every package
+pnpm test       # vitest
+pnpm build                       # Node build (self-host)
+PLATFORM=cloudflare pnpm build   # Cloudflare Workers build
+```
+
 ## Coming from Trelay?
 
 thelinks is the successor to [Trelay](https://github.com/thelinkspage/trelay-legacy). It's a rewrite, not an in-place upgrade. It will ship a Trelay importer that brings over your links, so you can move whenever you're ready.

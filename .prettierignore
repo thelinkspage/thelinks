@@ -1,0 +1,8 @@
+pnpm-lock.yaml
+LICENSE
+plan.md
+logo-ideas/
+**/static/
+**/.svelte-kit/
+**/build/
+**/dist/

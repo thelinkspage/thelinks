@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Lint, typecheck, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm check
+      - run: pnpm test
+
+  build:
+    name: Build (${{ matrix.platform }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [node, cloudflare]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+        env:
+          PLATFORM: ${{ matrix.platform }}
+      - name: Smoke-test the Node server
+        if: matrix.platform == 'node'
+        working-directory: apps/web
+        run: |
+          PORT=3000 node build &
+          for i in $(seq 1 20); do curl -sf localhost:3000/healthz && exit 0; sleep 0.5; done
+          echo "server did not answer /healthz" && exit 1

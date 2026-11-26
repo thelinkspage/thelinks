@@ -19,3 +19,8 @@ coverage/
 !.env.example
 .DS_Store
 *.log
+.output/
+.cloudflare/
+vite.config.*.timestamp-*
+Thumbs.db
+!.env.test
